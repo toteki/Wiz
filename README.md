@@ -51,18 +51,15 @@ See examples/README.md for specifics.
 
 ### Exposed Functions By File
 
+AES.go
+```
+AESEncrypt(data []byte, key []byte) ([]byte, error)
+AESDecrypt(stream []byte, key []byte) ([]byte, error)
+```
+
 Args.go
 ```
-Args() []string
-Executable() string
-ProgramName() string
-```
-Client.go
-```
-Get(err *error, url string) []byte
-StructGet(err *error, url string, responsePayload interface{})
-Post(err *error, url string, requestBody []byte) []byte
-StructPost(err *error, url string, requestPayload interface{}, responsePayload interface{})
+Args() []string //Return command line arguments passed to program
 ```
 Console.go
 ```
@@ -74,20 +71,25 @@ Green(items ...interface{})
 Blue(items ...interface{})
 Purple(items ...interface{})
 White(items ...interface{})
-Grey(items ...interface{})
+Print(items ...interface{})
 ```
 Ed25519.go
 ```
-NewEdKeyPair(err *error, seed []byte) ([]byte, []byte)
-EdSign(err *error, data []byte, privateKey []byte, publicKey []byte) ([]byte)
-EdVerify(err *error, data []byte, signature []byte, publicKey []byte)
+NewEdKeyPair(seed []byte) ([]byte, []byte, error)
+EdSign(data, publicKey, privateKey []byte) ([]byte, error)
+EdVerify(data, signature, publicKey []byte) error
 ```
 Files.go
 ```
-DeleteFile(err *error, file string)
-MkDir(err *error, dir string)
-WriteFile(err *error, file string, data []byte)
-ReadFile(err *error, file string) []byte
+Executable() string
+ProgramName() string
+Dir() string
+FileExists(file string) bool
+FolderExists(file string) bool
+DeleteFile(file string) error
+MkDir(dir string) error
+WriteFile(file string, data []byte) error
+ReadFile(file string) ([]byte, error)
 ```
 Hash.go
 ```
@@ -97,36 +99,45 @@ HashMatch(data []byte, hash []byte) bool
 Hex.go
 ```
 BytesToHex(data []byte) string
-HexToBytes(err *error, data string) []byte
+HexToBytes(data string) ([]byte, error)
+```
+HTTP.go
+```
+ServeSimple(ln net.Listener, getter func([]string) (int, []byte), poster func([]string, []byte) (int, []byte)) error
+NewClient(c *http.Client, timeout int) Client
+
+type Client
+Client.Get(url string) ([]byte, error)
+Client.GetStruct(url string, responseVessel interface{}) error
+Client.Post(url string, requestBody []byte) ([]byte, error)
+Client.PostStruct(url string, requestPayload interface{}, responseVessel interface{}) error
 ```
 JSON.go
 ```
-Marshal(err *error, payload interface{}) []byte
-MarshalNeat(err *error, payload interface{}) []byte
-StringMarshalNeat(err *error, payload interface{}) string
+CompactJSON(data []byte) ([]byte, error)
+NeatJSON(data []byte) ([]byte, error)
+Marshal(payload interface{}) ([]byte, error)
+MarshalNeat(payload interface{}) ([]byte, error)
 ```
 Random.go
 ```
-RandomBytes(err *error, len int) []byte
-```
-Server.go
-```
-ServeHTTP(err *error, addr string, getter func([]string) (int, []byte), poster func([]string, []byte) (int, []byte)) (served string)
-SplitURL(url string) []string
+RandomBytes(len int) ([]byte, error)
 ```
 SQLite.go
 ```
-type Database struct
-SQLiteOpen(err *error, dbName string) Database
-(*Database).Close()
-(*Database).MakeTable(err *error, tableName string)
-(*Database).ClearTable(err *error, tableName string)
-(*Database).AddItemAt(err *error, tableName string, primaryKey uint64, data string)
-(*Database).GetItemAt(err *error, tableName string, primaryKey uint64) string
-(*Database).DeleteItemAt(err *error, tableName string, primaryKey uint64)
-(*Database).GetKeys(err *error, tableName string) uint64
-(*Database).CheckOrder(err *error, tableName string) uint64
-(*Database).Latest(err *error, tableName string) uint64
+SQLiteOpen(err *error, dbName string) SimpleDatabase
+
+type SimpleDatabase
+SimpleDatabase.Close()
+SimpleDatabase.MakeTable(table string) error
+SimpleDatabase.ClearTable(table string) error
+SimpleDatabase.AddItemAt(table string, key uint64, data string) error
+SimpleDatabase.GetItemAt(table string, key uint64) (string, error)
+SimpleDatabase.DeleteItemAt(table string, key uint64) error
+SimpleDatabase.GetKeys(table string) ([]uint64, error)
+SimpleDatabase.CheckOrder(table string) (uint64, error)
+SimpleDatabase.Latest(table string) (uint64, error)
+
 ```
 Strings.go
 ```
@@ -137,9 +148,9 @@ String(interface{}) string
 Time.go
 ```
 Now() uint64
-Sleep(milliseconds int)
+Sleep(seconds int)
 ```
 Uint64.go
 ```
-Uint64(err *error, interface{}) uint64
+Uint64(interface{}) (uint64, error)
 ```
