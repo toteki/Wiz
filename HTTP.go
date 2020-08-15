@@ -40,6 +40,8 @@ import (
 //				each of which only receives request url (split into a slice by '/') and/or body, and returns a
 //				status code and response body (no headers and other request/response features supported)
 //				Note: Block until server fails (or forever) - start serve in a goroutine if program should continue while serving
+//			SplitURL(url string) []string
+//				Splits a string using the delmiter "/" and removes any empty strings in result slice
 
 //		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
@@ -177,11 +179,26 @@ func (c *Client) PostStruct(url string, requestPayload interface{}, responseVess
 //
 //
 
+func SplitURL(url string) []string {
+	u := strings.Split(url, "/")
+	//Example:
+	// If url was "/view/blocks/1234/"
+	// Then path is now ["","view","blocks","1234",""]
+	final := []string{}
+	for _, item := range u {
+		if item != "" {
+			final = append(final, strings.ToLower(item))
+		}
+	}
+	//Removed all empty strings from the array.
+	return final
+}
+
 //Serve on a given address, and forward GET and POST requests to the separate handlers provided
 func ServeSimple(ln net.Listener, getter func([]string) (int, []byte), poster func([]string, []byte) (int, []byte)) error {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//Begin root handler function
-		url := strings.Split(r.URL.Path, "/")
+		url := SplitURL(r.URL.Path)
 		method := r.Method
 		defer r.Body.Close()
 		body, err := ioutil.ReadAll(r.Body)
