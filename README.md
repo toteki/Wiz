@@ -103,6 +103,7 @@ HexToBytes(data string) ([]byte, error)
 ```
 HTTP.go
 ```
+SplitURL(url string) []string
 ServeSimple(ln net.Listener, getter func([]string) (int, []byte), poster func([]string, []byte) (int, []byte)) error
 NewClient(c *http.Client, timeout int) Client
 
