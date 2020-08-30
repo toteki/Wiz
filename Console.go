@@ -27,7 +27,7 @@ import (
 //				All of these print in a similar (bold first arg, newline each after)
 
 //			Print(items ...interface{})
-//				Uses faint/grey text when available. Does not bold first or newline before each arg.
+//				Does not mess set or unset color at all - just prints.
 
 //		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
@@ -56,7 +56,7 @@ func Prompt(prompt string) string {
 	return text
 }
 
-//Prints red. The first item passed is bolded. Each item gets a new line.
+//Prints blue. The first item passed is bolded. Each item gets a new line.
 func Blue(items ...interface{}) {
 	defer color.Unset()
 	color.Set(color.FgBlue, color.Bold)
@@ -146,11 +146,8 @@ func White(items ...interface{}) {
 	}
 }
 
-//Prints grey ("Faint white"). Spaces, not newlines, between items passed.
-//Windows computers seem to ignore 'faint' option, resulting in regular white.
+//Prints normally - does not set or unset any color parameters.
 func Print(items ...interface{}) {
-	defer color.Unset()
-	color.Set(color.FgWhite, color.Faint)
 	for _, element := range items {
 		fmt.Print(element, " ")
 	}
