@@ -56,10 +56,16 @@ AES.go
 AESEncrypt(data []byte, key []byte) ([]byte, error)
 AESDecrypt(stream []byte, key []byte) ([]byte, error)
 ```
-
 Args.go
 ```
 Args() []string //Return command line arguments passed to program
+```
+ASCII.go
+```
+ASCII(b []byte) (string, bool)
+Printable(b []byte) (string, bool)
+StripNonASCII(in string) string
+StripNonPrintableASCII(in string) string
 ```
 Console.go
 ```
