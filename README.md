@@ -29,23 +29,23 @@ The wiz repository must first and foremost remain compatible with the following 
 
 To provide stable support for both those use cases, additional patterns will be followed. Here is a working list:
 
-- wiz functions in different files cannot call each other *(to support individual file copying)*
+- wiz functions in different files cannot call each other *(to support copying of individual files to a project, they cannot be interdependent)*
 - error messages from wiz functions will use only the function name, rather than prefixing with *wiz.*
 - unexported functions should be avoided, lest they become available in the target code in the file copying use case
 
 ### Best practices note:
 
-It is best practice for packages to have a single purpose which is evident from their name *(e.g. github.com/pkg/errors)*
+It is best practice for go packages to have a single purpose which is evident from their name *(e.g. net/http)*
 
-This is the exact opposite of ambiguously named utilities packages *e.g. github.com/toteki/wiz*
+This is the exact opposite of ambiguously named utilities packages, like this one.
 
-Nevertheless, I have yet to encounter a single project which could not be vastly accelerated by accessible boilerplate. Sacrifices must be made.
+Nevertheless, I have yet to encounter a single project which could not be vastly accelerated by a utilities package. Sacrifices must be made.
 
-(Said sacrifices must be *unmade* efficiently when the dependency needs to be eliminated. This is the reasoning behind the second development mandate.)
+(Said sacrifices must be *unmade* efficiently when the dependency needs to be eliminated. This is the reasoning behind the second design mandate.)
 
 ### Wiz/Examples
 
-The examples folder is **not** meant to be imported, nor is any subdirectory. It is for cannibalism only.
+The examples folder is **not** meant to be imported.
 
 See examples/README.md for specifics.
 
