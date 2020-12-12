@@ -2,7 +2,7 @@
 
 Collection of boilerplate Go code
 
-### Development Mandates
+### Design Mandates
 
 The wiz repository must first and foremost remain compatible with the following two use cases:
 
