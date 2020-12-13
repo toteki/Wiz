@@ -80,7 +80,7 @@ func DeleteFile(file string) error {
 // MkDir Creates a folder with specified relative path + name ('dir')
 func MkDir(dir string) error {
 	path := filepath.FromSlash(Dir() + dir)
-	err := os.Mkdir(path, os.ModeDir)
+	err := os.Mkdir(path, 0755)
 	if err == nil || os.IsExist(err) {
 		return nil
 	} else {
