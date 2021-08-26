@@ -56,7 +56,7 @@ func Prompt(prompt string) string {
 	return text
 }
 
-//Prints blue. The first item passed is bolded. Each item gets a new line.
+// Prints blue. The first item passed is bolded. Each item gets a new line.
 func Blue(items ...interface{}) {
 	defer color.Unset()
 	color.Set(color.FgBlue, color.Bold)
@@ -71,7 +71,7 @@ func Blue(items ...interface{}) {
 	}
 }
 
-//Prints red. The first item passed is bolded. Each item gets a new line.
+// Prints red. The first item passed is bolded. Each item gets a new line.
 func Red(items ...interface{}) {
 	defer color.Unset()
 	color.Set(color.FgRed, color.Bold)
@@ -86,7 +86,7 @@ func Red(items ...interface{}) {
 	}
 }
 
-//Prints green. The first item passed is bolded. Each item gets a new line.
+// Prints green. The first item passed is bolded. Each item gets a new line.
 func Green(items ...interface{}) {
 	defer color.Unset()
 	color.Set(color.FgGreen, color.Bold)
@@ -101,7 +101,7 @@ func Green(items ...interface{}) {
 	}
 }
 
-//Prints yellow. The first item passed is bolded. Each item gets a new line.
+// Prints yellow. The first item passed is bolded. Each item gets a new line.
 func Yellow(items ...interface{}) {
 	defer color.Unset()
 	color.Set(color.FgYellow, color.Bold)
@@ -116,7 +116,7 @@ func Yellow(items ...interface{}) {
 	}
 }
 
-//Prints magenta. The first item passed is bolded. Each item gets a new line.
+// Prints magenta. The first item passed is bolded. Each item gets a new line.
 func Purple(items ...interface{}) {
 	defer color.Unset()
 	color.Set(color.FgMagenta, color.Bold)
@@ -131,7 +131,7 @@ func Purple(items ...interface{}) {
 	}
 }
 
-//Prints white. The first item passed is bolded. Each item gets a new line.
+// Prints white. The first item passed is bolded. Each item gets a new line.
 func White(items ...interface{}) {
 	defer color.Unset()
 	color.Set(color.FgWhite, color.Bold)
@@ -146,7 +146,7 @@ func White(items ...interface{}) {
 	}
 }
 
-//Prints normally - does not set or unset any color parameters.
+// Prints normally - does not set or unset any color parameters.
 func Print(items ...interface{}) {
 	for _, element := range items {
 		fmt.Print(element, " ")

@@ -6,17 +6,8 @@ import (
 	"strconv"
 )
 
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
-//		Exposed functions:
-//      Uint64(interface{}) (uint64, error)
-//				Converts certain number types and strings to uint64.
-//				Returns an error on failed conversion explaining why.
-
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
+// Converts certain number types and strings to uint64.
+// Returns an error on failed conversion explaining why.
 func Uint64(input interface{}) (uint64, error) {
 	n := uint64(0)
 	err := error(nil)

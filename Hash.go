@@ -4,18 +4,6 @@ import sha3 "golang.org/x/crypto/sha3"
 
 //		SHA3-512
 
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
-//		Exposed functions:
-//			Hash(data []byte) []byte
-//				Returns the hash of given data
-//			HashMatch(data []byte, hash []byte) bool
-//				Checks if the hash of given data is equal to a hash provided
-
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
 // Hash returns the SHA3-512 of a given byte slice
 func Hash(data []byte) []byte {
 	//Takes a byte slice and outputs the SHA3-512 hash of it

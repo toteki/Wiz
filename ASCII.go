@@ -5,22 +5,7 @@ import (
 	"unicode"
 )
 
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
-//		Exposed functions:
-//			ASCII(b []byte) (string, bool)
-//				Converts binary to ASCII - returns false if non-ASCII bytes found
-//			Printable(b []byte) (string, bool)
-//				Converts binary to printable string - returns false if non-printable characters found
-//			StripNonASCII(in string) string
-//				Strips non-ascii characters from a string
-//			StripNonPrintableASCII(in string) string
-//				Strips non-printable and non-ascii characters from a string
-
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
+// Converts binary to ASCII - returns false if non-ASCII bytes found
 func ASCII(b []byte) (string, bool) {
 	for _, c := range b {
 		if c > unicode.MaxASCII {
@@ -30,6 +15,7 @@ func ASCII(b []byte) (string, bool) {
 	return string(b), true
 }
 
+// Converts binary to printable string - returns false if non-printable characters found
 func Printable(b []byte) (string, bool) {
 	for _, c := range b {
 		if c > unicode.MaxASCII || !unicode.IsGraphic(rune(c)) {
@@ -39,11 +25,13 @@ func Printable(b []byte) (string, bool) {
 	return string(b), true
 }
 
+// Strips non-ascii characters from a string
 func StipNonASCII(in string) string {
 	re := regexp.MustCompile("[[:^ascii:]]")
 	return re.ReplaceAllLiteralString(in, "")
 }
 
+// Strips non-printable and non-ascii characters from a string
 func StripNonPrintableASCII(in string) string {
 	b := []byte(in)
 	out := []byte{}

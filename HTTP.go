@@ -16,32 +16,10 @@ import (
 //		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 
-//		Exposed types and methods:
-//			Client
-//				Wrapper for http client with this file's methods
-//			Client.Get(url string) ([]byte, error)
-//				Classic HTTP Get, returning response body (error if status code outside 200-299 range)
-//			Client.GetStruct(url string, responseVessel interface{}) error
-//				Get, but immediately unmarshals response body into a struct if 200-299 status.
-//				Note that json.Unmarshal requires the responsevessel be passed as a pointer to function properly
 //			Client.Post(url string, requestBody []byte) ([]byte, error)
-//				Classic HTTP Post, returning response body (error if status code outside 200-299 range)
+//
 //			Client.PostStruct(url string, requestPayload interface{}, responseVessel interface{}) error
-//				Post, but automatically marshals a struct as request body, and immediately unmarshals response body into a struct if 200-299 status.
-//				Note that json.Unmarshal requires the responsevessel be passed as a pointer to function properly
-
-//		Exposed functions:
-//			NewClient(c *http.Client, timeout int) Client
-//				Create a new Client from an http.Client, with a request timeout in seconds.
-//				Changes any negative or zero timeout to 1 second.
-//				Passing nil client causes the function to use the default &http.Client{} (then add the timeout)
-//			ServeSimple(ln net.Listener, getter func([]string) (int, []byte), poster func([]string, []byte) (int, []byte)) error
-//				Using a provided http.Listener, serve and forward all requests to a getHandler and postHandler function,
-//				each of which only receives request url (split into a slice by '/') and/or body, and returns a
-//				status code and response body (no headers and other request/response features supported)
-//				Note: Block until server fails (or forever) - start serve in a goroutine if program should continue while serving
-//			SplitURL(url string) []string
-//				Splits a string using the delmiter "/" and removes any empty strings in result slice
+//
 
 //		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
@@ -64,10 +42,14 @@ import (
 //		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 
+// Wrapper for http client with additional methods
 type Client struct {
 	client *http.Client
 }
 
+// Creates a new Client from an http.Client, with a request timeout in seconds.
+// Changes any negative or zero timeout to 1 second.
+// Passing nil client causes the function to use the default &http.Client{} (then add the timeout)
 func NewClient(c *http.Client, timeout int) Client {
 	if c == nil {
 		c = &http.Client{}
@@ -79,18 +61,19 @@ func NewClient(c *http.Client, timeout int) Client {
 	return Client{client: c}
 }
 
+// Classic HTTP Get, returning response body (error if status code outside 200-299 range)
 func (c *Client) Get(url string) ([]byte, error) {
 	if c == nil || c.client == nil {
-		return []byte{}, errors.New("Client.Get: nil client")
+		return []byte{}, errors.New("wiz.Client.Get: nil client")
 	}
 	r, err := c.client.Get(url)
 	if err != nil {
-		return []byte{}, errors.Wrap(err, "Client.Get")
+		return []byte{}, errors.Wrap(err, "wiz.Client.Get")
 	}
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		return []byte{}, errors.Wrap(err, "Client.Get")
+		return []byte{}, errors.Wrap(err, "wiz.Client.Get")
 	}
 	if r.StatusCode < 200 || r.StatusCode > 299 {
 		//Note: response body might contain useful information, but only printable
@@ -108,34 +91,37 @@ func (c *Client) Get(url string) ([]byte, error) {
 		} else {
 			info += ", Response body contained unprintable characters."
 		}
-		return []byte{}, errors.New("Client.Get: " + info)
+		return []byte{}, errors.New("wiz.Client.Get: " + info)
 	}
 	return body, nil
 }
 
-func (c *Client) GetStruct(url string, responseVessel interface{}) error {
+// HTTP Get, but immediately unmarshals response body into a struct if 200-299 status.
+// Note that json.Unmarshal requires the responseStruct be passed as a pointer to function properly
+func (c *Client) GetStruct(url string, responseStruct interface{}) error {
 	if c == nil || c.client == nil {
-		return errors.New("Client.GetStruct: nil client")
+		return errors.New("wiz.Client.GetStruct: nil client")
 	}
 	response, err := c.Get(url)
 	if err == nil {
-		err = json.Unmarshal(response, responseVessel)
+		err = json.Unmarshal(response, responseStruct)
 	}
-	return errors.Wrap(err, "Client.GetStruct")
+	return errors.Wrap(err, "wiz.Client.GetStruct")
 }
 
+// Classic HTTP Post, returning response body (error if status code outside 200-299 range)
 func (c *Client) Post(url string, requestBody []byte) ([]byte, error) {
 	if c == nil || c.client == nil {
-		return []byte{}, errors.New("Client.Post: nil client")
+		return []byte{}, errors.New("wiz.Client.Post: nil client")
 	}
 	r, err := c.client.Post(url, "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
-		return []byte{}, errors.Wrap(err, "Client.Post")
+		return []byte{}, errors.Wrap(err, "wiz.Client.Post")
 	}
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		return []byte{}, errors.Wrap(err, "Client.Post")
+		return []byte{}, errors.Wrap(err, "wiz.Client.Post")
 	}
 	if r.StatusCode < 200 || r.StatusCode > 299 {
 		//Note: response body might contain useful information, but only printable
@@ -153,24 +139,26 @@ func (c *Client) Post(url string, requestBody []byte) ([]byte, error) {
 		} else {
 			info += ", Response body contained unprintable characters."
 		}
-		return []byte{}, errors.New("Client.Post: " + info)
+		return []byte{}, errors.New("wiz.Client.Post: " + info)
 	}
 	return body, nil
 }
 
-func (c *Client) PostStruct(url string, requestPayload interface{}, responseVessel interface{}) error {
+// HTTP Post, but automatically marshals a struct as request body, and immediately unmarshals response body into a struct if 200-299 status.
+// Note that json.Unmarshal requires the responseStruct be passed as a pointer to function properly
+func (c *Client) PostStruct(url string, requestStruct interface{}, responseStruct interface{}) error {
 	if c == nil || c.client == nil {
-		return errors.New("Client.PostStruct: nil client")
+		return errors.New("wiz.Client.PostStruct: nil client")
 	}
-	body, err := json.Marshal(requestPayload)
+	body, err := json.Marshal(requestStruct)
 	if err != nil {
-		return errors.Wrap(err, "Client.PostStruct")
+		return errors.Wrap(err, "wiz.Client.PostStruct")
 	}
 	response, err := c.Post(url, body)
 	if err == nil {
-		err = json.Unmarshal(response, responseVessel)
+		err = json.Unmarshal(response, responseStruct)
 	}
-	return errors.Wrap(err, "Client.PostStruct")
+	return errors.Wrap(err, "wiz.Client.PostStruct")
 }
 
 //
@@ -179,6 +167,7 @@ func (c *Client) PostStruct(url string, requestPayload interface{}, responseVess
 //
 //
 
+// Splits a url at '/' characters
 func SplitURL(url string) []string {
 	u := strings.Split(url, "/")
 	//Example:
@@ -204,7 +193,7 @@ func ServeSimple(ln net.Listener, getter func([]string) (int, []byte), poster fu
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			w.WriteHeader(500) //Internal server error
-			w.Write([]byte("ServeSimple root handler: " + err.Error()))
+			w.Write([]byte("wiz.ServeSimple root handler: " + err.Error()))
 			return
 		}
 		status, response := 0, []byte("Initializing response")
@@ -214,7 +203,7 @@ func ServeSimple(ln net.Listener, getter func([]string) (int, []byte), poster fu
 		case "POST":
 			status, response = poster(url, body)
 		default:
-			status, response = 405, []byte("ServeSimple root handler: Method "+method+" not allowed")
+			status, response = 405, []byte("wiz.ServeSimple root handler: Method "+method+" not allowed")
 		}
 		w.WriteHeader(status)
 		w.Write(response)

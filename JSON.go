@@ -11,21 +11,6 @@ import (
 //			newlines are added. Output is normally bytes but can be string using
 //			the shortcut function.
 
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
-//		Exposed functions:
-//			CompactJSON(data []byte) ([]byte, error)
-//				Takes some json and removes unnecessary whitespace
-//			NeatJSON(data []byte) ([]byte, error)
-//				Takes some json and adds newlines and indentation for readability
-//			Marshal(payload interface{}) ([]byte, error)
-//				Takes a payload, and turns it into JSON
-//			MarshalNeat(payload interface{})  ([]byte, error)
-//				Takes a payload, and turns it into neatly formatted JSON
-
-//		Parameters of type interface{} basically mean "just pass any type"
-
 //From docs on encoding/json.Marshal:
 
 // So that the JSON will be safe to embed inside HTML <script> tags, the string
@@ -68,43 +53,47 @@ func jsonUnlock() {
 ////////////////////////
 ////////////////////////
 
+// Takes some json and adds newlines and three-space indentation for readability
 func NeatJSON(input []byte) ([]byte, error) {
 	buff := new(bytes.Buffer)
 	err := json.Indent(buff, input, "", "   ")
 	if err != nil {
-		return []byte{}, errors.Wrap(err, "NeatJSON")
+		return []byte{}, errors.Wrap(err, "wiz.NeatJSON")
 	}
 	return buff.Bytes(), nil
 }
 
+// Takes some json and removes unnecessary whitespace
 func CompactJSON(input []byte) ([]byte, error) {
 	buff := new(bytes.Buffer)
 	err := json.Compact(buff, input)
 	if err != nil {
-		return []byte{}, errors.Wrap(err, "CompactJSON")
+		return []byte{}, errors.Wrap(err, "wiz.CompactJSON")
 	}
 	return buff.Bytes(), nil
 }
 
+// Takes an object, and turns it into JSON
 func Marshal(payload interface{}) ([]byte, error) {
 	jsonLock()
 	defer jsonUnlock()
 	err := jsonencoder.Encode(payload)
 	if err != nil {
-		return []byte{}, errors.Wrap(err, "Marshal")
+		return []byte{}, errors.Wrap(err, "wiz.Marshal")
 	}
 	b := jsonencbuf.Bytes()
 	return b, nil
 }
 
+// Takes an object, and turns it into neatly formatted JSON
 func MarshalNeat(payload interface{}) ([]byte, error) {
 	b, err := Marshal(payload)
 	if err != nil {
-		return []byte{}, errors.Wrap(err, "MarshalNeat")
+		return []byte{}, errors.Wrap(err, "wiz.MarshalNeat")
 	}
 	n, err := NeatJSON(b)
 	if err != nil {
-		return []byte{}, errors.Wrap(err, "MarshalNeat")
+		return []byte{}, errors.Wrap(err, "wiz.MarshalNeat")
 	}
 	return n, nil
 }

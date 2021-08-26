@@ -2,37 +2,6 @@
 
 Collection of boilerplate Go code
 
-### Design Mandates
-
-The wiz repository must first and foremost remain compatible with the following two use cases:
-
-1. **import** github.com/toteki/wiz
-
-    Exported functions can be called like so:
-    ```
-    s = wiz.Args()
-    ```
-2. **copy** individual files and paste into a project anywhere
-
-    The first line of each file:
-    ```
-    package wiz
-    ```
-    must be changed to match the destination. Examples:
-    ```
-    package main
-    ```
-    ```
-    package foo
-    ```
-    Beware name collisions with the target code in that case.
-
-To provide stable support for both those use cases, additional patterns will be followed. Here is a working list:
-
-- wiz functions in different files cannot call each other *(to support copying of individual files to a project, they cannot be interdependent)*
-- error messages from wiz functions will use only the function name, rather than prefixing with *wiz.*
-- unexported functions should be avoided, lest they become available in the target code in the file copying use case
-
 ### Best practices note:
 
 It is best practice for go packages to have a single purpose which is evident from their name *(e.g. net/http)*
@@ -40,14 +9,6 @@ It is best practice for go packages to have a single purpose which is evident fr
 This is the exact opposite of ambiguously named utilities packages, like this one.
 
 Nevertheless, I have yet to encounter a single project which could not be vastly accelerated by a utilities package. Sacrifices must be made.
-
-(Said sacrifices must be *unmade* efficiently when the dependency needs to be eliminated. This is the reasoning behind the second design mandate.)
-
-### Wiz/Examples
-
-The examples folder is **not** meant to be imported.
-
-See examples/README.md for specifics.
 
 ### Exposed Functions By File
 
@@ -129,22 +90,6 @@ MarshalNeat(payload interface{}) ([]byte, error)
 Random.go
 ```
 RandomBytes(len int) ([]byte, error)
-```
-SQLite.go
-```
-SQLiteOpen(err *error, dbName string) SimpleDatabase
-
-type SimpleDatabase
-SimpleDatabase.Close()
-SimpleDatabase.MakeTable(table string) error
-SimpleDatabase.ClearTable(table string) error
-SimpleDatabase.AddItemAt(table string, key uint64, data string) error
-SimpleDatabase.GetItemAt(table string, key uint64) (string, error)
-SimpleDatabase.DeleteItemAt(table string, key uint64) error
-SimpleDatabase.GetKeys(table string) ([]uint64, error)
-SimpleDatabase.CheckOrder(table string) (uint64, error)
-SimpleDatabase.Latest(table string) (uint64, error)
-
 ```
 Strings.go
 ```

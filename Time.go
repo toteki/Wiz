@@ -4,18 +4,6 @@ import (
 	time "time"
 )
 
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
-//		Exposed functions:
-//			Now() uint64
-//			Sleep(seconds int)
-
-//		Never returns errors
-
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
 // Now returns unix timestamp of now.
 func Now() uint64 {
 	utc := time.Now()         //gets time from system

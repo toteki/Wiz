@@ -5,9 +5,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-//Antipanic - usage: ' defer Antipanic(&e, "label") ' at the beginning of any function.
+//Antipanic - usage: defer Antipanic(&e, "label") at the beginning of any function.
 // Label is usually the name of the function prefixed by its package name, e.g.
-// "foo.bar()". This results in traditionally wrapped errors (mimics errors.Wrap).
+// "package.func". This results in traditionally wrapped errors (mimics errors.Wrap).
 // Main purpose: deferring this function transforms panics into errors when they
 // occur inside the function it was deferred in, and requires only one line.
 // Additionally it allows gung-ho use of panics inside parent function to replace
@@ -32,14 +32,7 @@ func Panic(s string) {
 	Check(err)
 }
 
-//Check turns errors into panics (and thus causes a return in parent function)
-//	If used inside a function that starts with a "defer u.Antipanic" line,
-//	if can turn the repetitive
-//			if err != nil {
-//				return
-//			}
-//	into the one-liner
-//			u.Check(err)
+//Panics if an error is non-nil. Use after defer Antipanic to shorten code.
 func Check(e error) {
 	if e != nil {
 		panic(e)

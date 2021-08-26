@@ -5,9 +5,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-//		TODO: Add ephemeral key generation and diffie hellmann, if needed.
-//			I'm sure the parent package has it, so just go there first.
-
 //		Ed25519 cryptography. (Elliptic curve)
 
 //		Seed size: 32 bytes (key generation)
@@ -39,60 +36,46 @@ import (
 //			need good randoms when generating the keys but after that no entropy
 //			is required and shitty hardware randoms can't kill you.
 
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
-//		Exposed functions:
-//			NewEdKeyPair(seed []byte) ([]byte, []byte, error)
-//				The returns are public key, then private key. Don't mess up the order.
-//			EdSign(data, publicKey, privateKey []byte) ([]byte, error)
-//				Does auto-verify the signature based on public key provided.
-//			EdVerify(data, signature, publicKey []byte) error
-//				Signature is only valid if error is nil
-
-//		It's crypto, so error checking is critical. EdVerify results in nil error if the
-//			signature was valid for the provided public key and exact data.
-
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//		*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
+// Creates a new Ed25519 keypair from a given 32 byte seed. The seed should be generated securely (e.g. using crypto/rand) The returns are public key, then private key. Don't mess up the order.
 func NewEdKeyPair(seed []byte) ([]byte, []byte, error) {
 	example := []byte("Noctu Orfei Aude Fraetor")
 	if len(seed) != 32 {
-		return []byte{}, []byte{}, errors.New("NewEdKeyPair: seed size did not match requirement")
+		return []byte{}, []byte{}, errors.New("wiz.NewEdKeyPair: seed size did not match requirement")
 	}
 	pri := ed25519.NewKeyFromSeed(seed)
 	pub := make([]byte, 32)
 	copy(pub, pri[32:])
 	_, err := EdSign(example, pub, pri)
 	if err != nil {
-		return []byte{}, []byte{}, errors.Wrap(err, "NewEdKeyPair")
+		return []byte{}, []byte{}, errors.Wrap(err, "wiz.NewEdKeyPair")
 	}
 	return pub, pri, nil
 }
 
+// Signs data using an Ed25519 key pair. While only the private key is needed for signing, this function also verifies the signature using the public key provided and returns an error if verification failed, thus guarding against misuse.
 func EdSign(data, publicKey, privateKey []byte) ([]byte, error) {
 	if len(privateKey) != 64 {
-		return []byte{}, errors.New("EdSign: private key size did not match requirement")
+		return []byte{}, errors.New("wiz.EdSign: private key size did not match requirement")
 	}
 	if len(publicKey) != 32 {
-		return []byte{}, errors.New("EdSign: public key size did not match requirement")
+		return []byte{}, errors.New("wiz.EdSign: public key size did not match requirement")
 	}
 	sig := ed25519.Sign(privateKey, data)
 	err := EdVerify(data, sig, publicKey)
 	if err != nil {
 		//It is a security risk to leak an invalid signature if nonrandom (return empty []byte instead)
-		return []byte{}, errors.Wrap(err, "EdSign (self-check)")
+		return []byte{}, errors.Wrap(err, "wiz.EdSign (self-check)")
 	}
 	return sig, nil
 }
 
+// Verifies that a 64byte signature is a valid Ed25519 signature of given data (of any length) using a 32 byte Ed25519 public key. Error is non-nil only if verification succeeds.
 func EdVerify(data, signature, publicKey []byte) error {
 	if len(publicKey) != 32 {
-		return errors.New("EdVerify: public key size did not match requirement")
+		return errors.New("wiz.EdVerify: public key size did not match requirement")
 	}
 	if ed25519.Verify(publicKey, data, signature) {
 		return nil //Signature valid
 	}
-	return errors.New("EdVerify: Signature invalid")
+	return errors.New("wiz.EdVerify: Signature invalid")
 }
